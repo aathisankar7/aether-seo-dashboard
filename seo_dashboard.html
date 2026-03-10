@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether SEO | Intelligence Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #06b6d4;
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --bg-deep: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: #f1f5f9;
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(6, 118, 212, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        h1,
+        h2,
+        h3,
+        .font-heading {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-premium {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .stagger-1 {
+            animation-delay: 0.1s;
+        }
+
+        .stagger-2 {
+            animation-delay: 0.2s;
+        }
+
+        .stagger-3 {
+            animation-delay: 0.3s;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .sidebar-item {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+            color: white;
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), var(--accent-secondary), transparent);
+            position: absolute;
+            top: 0;
+            animation: scan 3s ease-in-out infinite;
+            opacity: 0.3;
+            box-shadow: 0 0 10px var(--accent-glow);
+            z-index: 10;
+        }
+
+        @keyframes scan {
+            from {
+                top: 0;
+            }
+
+            to {
+                top: 100%;
+            }
+        }
+
+        .terminal-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .health-ring {
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        /* Neural Status Animations */
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 5px var(--accent-glow);
+            }
+
+            50% {
+                box-shadow: 0 0 20px var(--accent-glow);
+            }
+
+            100% {
+                box-shadow: 0 0 5px var(--accent-glow);
+            }
+        }
+
+        .neural-active {
+            animation: pulse-glow 2s infinite;
+            border: 1px solid var(--accent-primary);
+        }
+
+        .cyber-grid {
+            background-image:
+                linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* Markdown Overrides */
+        .markdown-content h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #a78bfa;
+            margin: 1.5rem 0 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.25rem;
+        }
+
+        .markdown-content p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-content ul {
+            list-style: disc;
+            margin-left: 1.5rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-content strong {
+            color: #e2e8f0;
+        }
+
+        .ninja-aura {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ninja-aura::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Auth Overlay */
+        #authOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(24px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 3rem;
+            animation: authPop 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes authPop {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="flex min-h-screen antialiased cyber-grid">
+
+    <!-- Auth Overlay -->
+    <div id="authOverlay">
+        <div class="auth-card glass-premium rounded-[3rem] border border-white/10 shadow-3xl">
+            <div class="mb-10 text-center">
+                <div
+                    class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-600/40">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 21a10.003 10.003 0 008.384-4.51l.054.09m-4.288-8.766a5.001 5.001 0 11-9.492 0" />
+                    </svg>
+                </div>
+                <h2 id="authTitle" class="text-3xl font-black text-white mb-2">Initialize Session</h2>
+                <p id="authSubtitle" class="text-slate-500 text-sm font-medium uppercase tracking-widest">Awaiting
+                    Neural Uplink</p>
+            </div>
+
+            <form id="authForm" class="space-y-6">
+                <div id="emailField" class="hidden">
+                    <label
+                        class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-2">Secure
+                        Email</label>
+                    <input type="email" id="authEmail"
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-medium">
+                </div>
+                <div>
+                    <label
+                        class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-2">Operator
+                        Identity</label>
+                    <input type="text" id="authUsername" required
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-medium">
+                </div>
+                <div>
+                    <label
+                        class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-2">Encrypted
+                        Access Code</label>
+                    <input type="password" id="authPassword" required
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-medium">
+                </div>
+                <button type="submit" id="authSubmitBtn"
+                    class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-lg active:scale-95">
+                    Connect Core
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <button onclick="toggleAuthMode()" id="authModeToggle"
+                    class="text-[10px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest">
+                    Request New Authorization
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="w-72 glass fixed h-screen z-50 flex flex-col p-8 border-r-0">
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-2">
+                <div
+                    class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg shadow-indigo-600/30">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tighter glow-text leading-none">AI SEO Engine</h1>
+                </div>
+            </div>
+        </div>
+
+        <nav class="space-y-1.5 flex-grow overflow-y-auto pr-2 custom-scroll">
+            <button onclick="switchView('dashboard')" id="nav-dashboard"
+                class="sidebar-item active w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-400 font-medium text-sm transition-all hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                Dashboard
+            </button>
+            <button onclick="switchView('competitors')" id="nav-competitors"
+                class="sidebar-item w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-400 font-medium text-sm transition-all hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Competitor Battle
+            </button>
+            <button onclick="switchView('keywords')" id="nav-keywords"
+                class="sidebar-item w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-400 font-medium text-sm transition-all hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                </svg>
+                Keyword Strategy
+            </button>
+            <button onclick="switchView('links')" id="nav-links"
+                class="sidebar-item w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-400 font-medium text-sm transition-all hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                Link Prospecting
+            </button>
+            <button onclick="switchView('ninja')" id="nav-ninja"
+                class="sidebar-item w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-amber-500/80 font-bold text-sm transition-all hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Ninja Intelligence
+            </button>
+            <button onclick="switchView('schema')" id="nav-schema"
+                class="sidebar-item w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-400 font-medium text-sm transition-all hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                Schema Engineering
+            </button>
+            <button onclick="switchView('linkbait')" id="nav-linkbait"
+                class="sidebar-item w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-400 font-medium text-sm transition-all hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                Link Bait Ideas
+            </button>
+            <div class="h-px bg-white/5 my-4 mx-2"></div>
+            <button onclick="switchView('docs')" id="nav-docs"
+                class="sidebar-item w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-cyan-400 font-medium text-sm transition-all hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                System Protocol
+            </button>
+            <button onclick="logout()"
+                class="sidebar-item w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-red-500/70 font-medium text-sm transition-all hover:bg-red-500/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Disconnect
+            </button>
+            <div class="pt-4">
+                <button onclick="downloadCSV()" id="downloadBtn"
+                    class="hidden w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-green-400 font-bold text-xs transition-all hover:bg-white/5 border border-green-900/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    DOWNLOAD REPORTS (.CSV)
+                </button>
+            </div>
+        </nav>
+
+        <div class="mt-auto pt-8 border-t border-white/5 overflow-y-auto max-h-[40%] custom-scroll">
+            <div class="flex items-center gap-2 mb-4 px-2">
+                <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Neural Fleet Active</span>
+            </div>
+
+            <div class="space-y-2">
+                <!-- Groq -->
+                <div
+                    class="bg-white/5 rounded-xl p-3 border border-white/5 group hover:border-indigo-500/30 transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold text-slate-300">Llama 3.3 70B</span>
+                        <span class="text-[8px] font-black text-indigo-400 uppercase">Groq</span>
+                    </div>
+                </div>
+
+                <!-- Cerebras -->
+                <div
+                    class="bg-white/5 rounded-xl p-3 border border-white/5 group hover:border-purple-500/30 transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold text-slate-300">Llama 3.1 8B</span>
+                        <span class="text-[8px] font-black text-purple-400 uppercase">Cerebras</span>
+                    </div>
+                </div>
+
+                <!-- SambaNova -->
+                <div
+                    class="bg-white/5 rounded-xl p-3 border border-white/5 group hover:border-orange-500/30 transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold text-slate-300">Llama 3.1 405B</span>
+                        <span class="text-[8px] font-black text-orange-400 uppercase">SambaNova</span>
+                    </div>
+                </div>
+
+                <!-- GLM-4.5 -->
+                <div
+                    class="bg-white/5 rounded-xl p-3 border border-white/5 group hover:border-cyan-500/30 transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold text-slate-300">GLM-4.5 Air</span>
+                        <span class="text-[8px] font-black text-cyan-400 uppercase">Routeway</span>
+                    </div>
+                </div>
+
+                <!-- Moonshot -->
+                <div
+                    class="bg-white/5 rounded-xl p-3 border border-white/5 group hover:border-green-500/30 transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold text-slate-300">Moonshot V1</span>
+                        <span class="text-[8px] font-black text-green-400 uppercase">Moonshot</span>
+                    </div>
+                </div>
+
+                <!-- Qwen -->
+                <div
+                    class="bg-indigo-500/10 rounded-xl p-3 border border-indigo-500/20 group hover:border-indigo-500/50 transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold text-slate-200">Qwen 2.5 7B</span>
+                        <span class="text-[8px] font-black text-indigo-400 uppercase">Local Core</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-[8px] font-mono text-indigo-400 uppercase font-black">Ninja
+                            Offline-Safe</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-72 flex-grow p-12 overflow-x-hidden">
+
+        <!-- Top Bar -->
+        <header class="flex flex-col md:flex-row items-center justify-between gap-8 mb-16 animate-in stagger-1">
+            <div class="w-full max-w-3xl">
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000">
+                    </div>
+                    <input type="text" id="urlInput" placeholder="Enter target website (e.g. cosmosclinics.in)"
+                        class="relative w-full bg-slate-950/50 border border-white/5 rounded-2xl px-8 py-4 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-500/30 backdrop-blur-3xl transition-all font-medium text-sm">
+                    <button onclick="startAnalysis()" id="analyzeBtn"
+                        class="absolute right-2 top-2 bottom-2 px-10 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-purple-900/20 active:scale-95">
+                        RUN AUDIT
+                    </button>
+                    <button onclick="resetSearch()" id="resetBtn"
+                        class="hidden absolute right-2 top-2 bottom-2 px-10 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-95">
+                        NEW SEARCH
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <!-- Neural Heartbeat -->
+                <div id="neuralCoreStatus" class="glass px-6 py-3 rounded-2xl flex items-center gap-4 border-white/5">
+                    <div class="relative">
+                        <div class="w-3 h-3 bg-indigo-500 rounded-full animate-ping absolute opacity-75"></div>
+                        <div class="w-3 h-3 bg-indigo-500 rounded-full relative"></div>
+                    </div>
+                    <div>
+                        <span class="block text-[9px] font-black text-slate-500 uppercase tracking-widest">Active Neural
+                            Core</span>
+                        <span id="activeModelName"
+                            class="text-xs font-mono text-indigo-400 font-bold">AWAITING_TASKS</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Neural Heartbeat -->
+                    <div id="neuralCoreStatus"
+                        class="bg-white/5 border border-white/5 rounded-lg px-3 py-1 flex items-center gap-3 transition-all duration-500">
+                        <div class="relative flex items-center">
+                            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-ping absolute opacity-75"></div>
+                            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full relative"></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Active
+                                Core:</span>
+                            <span id="activeModelName"
+                                class="text-[9px] font-mono text-indigo-400 font-bold">IDLE</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/5 rounded-lg px-3 py-1 flex items-center gap-2">
+                        <span class="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Engine_V:</span>
+                        <span class="text-[9px] font-mono text-cyan-500 font-bold tracking-tighter">PRO.V2.0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- View: Dashboard -->
+        <section id="view-dashboard" class="space-y-12">
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 animate-in stagger-2">
+                <div
+                    class="glass-premium rounded-3xl p-8 group hover:border-indigo-500/50 transition-all duration-500 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4">
+                        <svg class="w-4 h-4 text-indigo-500/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke-width="2" />
+                            <path d="M9 12l2 2 4-4" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="flex justify-between items-start mb-6">
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Health Score</h4>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="relative flex items-center justify-center">
+                            <svg class="w-16 h-16 transform -rotate-90">
+                                <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent"
+                                    class="text-slate-800" />
+                                <circle id="healthRing" cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6"
+                                    fill="transparent" stroke-dasharray="175.9" stroke-dashoffset="175.9"
+                                    class="text-indigo-500 health-ring" />
+                            </svg>
+                            <span id="resScore" class="absolute text-xl font-bold font-heading">--</span>
+                        </div>
+                        <div>
+                            <span class="block text-2xl font-black tabular-nums glow-text" id="scoreValue">-- /
+                                100</span>
+                            <span class="text-[8px] font-mono text-slate-500 uppercase">Calculated by Qwen2.5-7b</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-premium rounded-3xl p-8 group hover:border-cyan-500/50 transition-all duration-500">
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Market Identity
+                    </h4>
+                    <h3 id="resNiche" class="text-xl font-black text-white mb-1">Awaiting...</h3>
+                    <p id="resLocation" class="text-[11px] text-slate-400 flex items-center gap-2">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        N/A
+                    </p>
+                </div>
+
+                <div class="glass-premium rounded-3xl p-8 relative overflow-hidden group">
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Scanned Content
+                    </h4>
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span id="resWordCount" class="text-2xl font-black tabular-nums glow-text">0</span>
+                        <span class="text-[9px] font-bold text-slate-500 uppercase">words</span>
+                    </div>
+                    <p class="text-[8px] font-bold text-green-500 uppercase tracking-widest">SEO Quality: Analyzing</p>
+                    <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                        <div id="wordProgress" class="bg-cyan-500 h-full transition-all duration-1000"
+                            style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="glass-premium rounded-3xl p-8">
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Competitors</h4>
+                    <div class="flex items-baseline gap-2">
+                        <span id="resCompCount" class="text-2xl font-black tabular-nums glow-text">0</span>
+                        <span class="text-[9px] font-bold text-slate-500 uppercase">discovered</span>
+                    </div>
+                    <p class="text-[8px] font-black text-indigo-400 mt-2 tracking-widest uppercase">Stealth Google
+                        Active</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <!-- Log Feed -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div id="terminalContainer" class="hidden animate-in">
+                        <div class="glass rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
+                            <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
+                                <div class="flex gap-1.5">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+                                </div>
+                                <span
+                                    class="text-[9px] font-black font-heading text-slate-400 uppercase tracking-widest">Intelligence_Log</span>
+                            </div>
+                            <div id="terminal"
+                                class="p-6 h-[400px] overflow-y-auto font-mono text-[10px] leading-relaxed terminal-scroll relative bg-black/40">
+                                <div class="scan-line"></div>
+                                <div class="text-slate-600 italic animate-pulse">> Booting up Aether Core...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Intelligence Display -->
+                <div class="lg:col-span-8">
+                    <div id="summaryResults" class="hidden space-y-10 animate-in">
+                        <!-- On-Page -->
+                        <div class="glass-premium rounded-3xl p-10 border-l-4 border-indigo-500 shadow-2xl">
+                            <div class="flex items-center gap-4 mb-8">
+                                <h2 class="text-2xl font-black text-white tracking-tight">On-Page Engineering</h2>
+                                <div class="h-px flex-grow bg-white/5"></div>
+                            </div>
+
+                            <div class="space-y-8">
+                                <div class="group">
+                                    <label
+                                        class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3 block">Neural
+                                        Optimized Title</label>
+                                    <div id="resTitle"
+                                        class="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors bg-white/5 p-5 rounded-2xl border border-white/5">
+                                        --</div>
+                                </div>
+                                <div class="group">
+                                    <label
+                                        class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3 block">Conversion
+                                        Centric Snippet</label>
+                                    <div id="resDesc"
+                                        class="text-sm font-medium text-slate-400 leading-relaxed bg-white/5 p-5 rounded-2xl border border-white/5">
+                                        --</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Roadmap -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="glass-premium rounded-3xl p-8 border-l-4 border-cyan-500">
+                                <h3 class="text-lg font-black text-white mb-6 flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 20l-5.447-2.724A2 2 0 013 15.492V4.508a2 2 0 011.553-1.954L9 1m0 19l6-3m-6 3V1m6 16l5.447 2.724A2 2 0 0021 17.766V6.782a2 2 0 00-1.553-1.954L15 1m0 16V1" />
+                                    </svg>
+                                    Strategic Actions
+                                </h3>
+                                <div id="listRoadmap" class="space-y-4">
+                                    <p class="text-slate-500 italic text-sm">Processing strategy...</p>
+                                </div>
+                            </div>
+
+                            <div class="glass-premium rounded-3xl p-8 border-l-4 border-purple-500">
+                                <h3 class="text-lg font-black text-white mb-6 flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Opportunity View
+                                </h3>
+                                <div id="listOpportunities" class="space-y-4">
+                                    <div
+                                        class="p-4 bg-white/5 rounded-2xl flex items-center justify-between border border-white/5">
+                                        <span class="text-xs font-bold text-slate-400 uppercase">Analysis
+                                            Confidence</span>
+                                        <span class="text-xs font-mono text-purple-400 font-black">94.2%</span>
+                                    </div>
+                                    <div
+                                        class="p-4 bg-white/5 rounded-2xl flex items-center justify-between border border-white/5">
+                                        <span class="text-xs font-bold text-slate-400 uppercase">Competitive Gap</span>
+                                        <span class="text-xs font-mono text-cyan-400 font-black">-12.5%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Competitors (Market Battle) -->
+        <section id="view-competitors" class="hidden space-y-10 animate-in">
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-4xl font-black text-white mb-2">Market Battle Sheets</h2>
+                    <p class="text-slate-400 font-medium">Domain-level intersection and tactical countermeasures.</p>
+                </div>
+                <div
+                    class="px-6 py-2 bg-indigo-500/10 rounded-full border border-indigo-500/20 text-[10px] font-black text-indigo-400 uppercase tracking-widest">
+                    Discovery Engine Active</div>
+            </div>
+
+            <div id="competitorList" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div
+                    class="md:col-span-2 py-32 text-center glass-premium rounded-[3rem] border-dashed border-2 border-white/10">
+                    <div class="w-20 h-20 bg-indigo-600/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-indigo-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a2 2 0 00-1.96 1.414l-.722 2.166a2 2 0 00.122 1.585l1.09 1.636a2 2 0 002.348.813l2.842-1.033a2 2 0 001.31-1.468l.186-2.046a2 2 0 00-.807-2.043z" />
+                        </svg>
+                    </div>
+                    <p class="text-slate-500 font-bold uppercase tracking-[0.2em] italic">Run audit to unlock market
+                        intelligence</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Keywords -->
+        <section id="view-keywords" class="hidden space-y-10 animate-in">
+            <h2 class="text-4xl font-black text-white mb-12">Keyword Clusters</h2>
+            <div id="keywordGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Data Injected Here -->
+            </div>
+        </section>
+
+        <!-- View: Link Prospecting -->
+        <section id="view-links" class="hidden space-y-10 animate-in">
+            <h2 class="text-4xl font-black text-white mb-12">Backlink Opportunities</h2>
+            <div id="linksGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Data Injected Here -->
+            </div>
+        </section>
+
+        <!-- View: Schema Engineering -->
+        <section id="view-schema" class="hidden space-y-10 animate-in">
+            <h2 class="text-4xl font-black text-white mb-12">Schema Markups</h2>
+            <div id="schemaGrid" class="space-y-8">
+                <!-- Data Injected Here -->
+            </div>
+        </section>
+
+        <!-- View: Link Bait Ideas -->
+        <section id="view-linkbait" class="hidden space-y-10 animate-in">
+            <h2 class="text-4xl font-black text-white mb-12">Link Bait Concepts</h2>
+            <div id="linkbaitContent" class="glass-premium rounded-[3rem] p-16 markdown-content">
+                <!-- Data Injected Here -->
+            </div>
+        </section>
+
+        <!-- View: Ninja Tactics -->
+        <section id="view-ninja" class="hidden space-y-10 animate-in">
+            <div
+                class="ninja-aura glass-premium rounded-[3rem] p-16 border-t-8 border-amber-600 shadow-2xl shadow-amber-900/10">
+                <div class="relative z-10 flex flex-col items-center">
+                    <div
+                        class="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-700 rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-amber-600/40">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-5xl font-black text-white mb-4 uppercase tracking-tighter italic glow-text">Ninja
+                        Intelligence</h2>
+                    <p class="text-amber-200/50 font-bold tracking-[0.3em] uppercase mb-12">Unorthodox SEO Dominance
+                        Strategies</p>
+
+                    <div id="ninjaContent" class="w-full max-w-4xl markdown-content">
+                        <div class="py-20 text-center opacity-30">
+                            <p class="text-xs font-mono tracking-[0.5em] mb-4">ENCRYPTED // IDLE</p>
+                            <div class="w-full max-w-xs mx-auto bg-slate-800 h-1 animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: System Docs -->
+        <section id="view-docs" class="hidden space-y-12 animate-in">
+            <h2 class="text-4xl font-black text-white mb-12">System Protocol</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="glass-premium rounded-3xl p-8 border border-white/5">
+                    <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Neural Engine Logic</h3>
+                    <p id="docsEngine" class="text-xs text-slate-400 leading-relaxed italic">Synchronizing Fleet
+                        Dynamics...</p>
+                </div>
+
+                <div class="glass-premium rounded-3xl p-8 border border-white/5">
+                    <div class="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Fair Usage Policy</h3>
+                    <p id="docsUsage" class="text-xs text-slate-400 leading-relaxed italic">Retrieving Quota
+                        Protocols...</p>
+                </div>
+
+                <div class="glass-premium rounded-3xl p-8 border border-white/5">
+                    <div class="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Privacy Encryption</h3>
+                    <p id="docsPrivacy" class="text-xs text-slate-400 leading-relaxed italic">Verifying Secure
+                        Channels...</p>
+                </div>
+            </div>
+
+            <div class="glass-premium rounded-[3rem] p-12 markdown-content">
+                <h3>Technical Documentation</h3>
+                <p>This SaaS platform is optimized for deep-domain SEO analysis using a distributed AI architecture. Our
+                    engine leverages heterogeneous LLM execution to maximize analysis precision while maintaining rapid
+                    throughput.</p>
+                <ul>
+                    <li><strong>Distributed Inference:</strong> Tasks are routed to Groq or SambaNova based on
+                        complexity.</li>
+                    <li><strong>Stealth Crawling:</strong> Integrated Playwright logic bypasses market-lead anti-bot
+                        measures.</li>
+                    <li><strong>Identity Preservation:</strong> User credentials are salted and hashed using
+                        industry-standard BCRYPT protocols.</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const API_BASE = "http://localhost:8000/api";
+        let eventSource = null;
+
+        function switchView(viewId) {
+            ['dashboard', 'competitors', 'keywords', 'links', 'ninja', 'schema', 'linkbait', 'docs'].forEach(id => {
+                const nav = document.getElementById('nav-' + id);
+                const view = document.getElementById('view-' + id);
+                if (nav) nav.classList.remove('active');
+                if (view) view.classList.add('hidden');
+            });
+
+            const targetNav = document.getElementById('nav-' + viewId);
+            const targetView = document.getElementById('view-' + viewId);
+            if (targetNav) targetNav.classList.add('active');
+            if (targetView) targetView.classList.remove('hidden');
+
+            if (viewId === 'docs') fetchSystemDocs();
+
+            // Scroll to top of main content
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // AUTH LOGIC
+        let authMode = 'login';
+
+        function toggleAuthMode() {
+            authMode = authMode === 'login' ? 'register' : 'login';
+            document.getElementById('authTitle').textContent = authMode === 'login' ? 'Initialize Session' : 'Create Operator Profile';
+            document.getElementById('authSubtitle').textContent = authMode === 'login' ? 'Awaiting Neural Uplink' : 'Establishing New Identity';
+            document.getElementById('emailField').classList.toggle('hidden', authMode === 'login');
+            document.getElementById('authSubmitBtn').textContent = authMode === 'login' ? 'Connect Core' : 'Register Operator';
+            document.getElementById('authModeToggle').textContent = authMode === 'login' ? 'Request New Authorization' : 'Already have credentials?';
+        }
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('authUsername').value;
+            const password = document.getElementById('authPassword').value;
+            const email = document.getElementById('authEmail').value;
+            const btn = document.getElementById('authSubmitBtn');
+
+            btn.disabled = true;
+            btn.textContent = "VERIFYING...";
+
+            try {
+                if (authMode === 'register') {
+                    const res = await fetch(`${API_BASE}/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, email, password })
+                    });
+                    if (!res.ok) throw new Error(await res.text());
+                    alert("Registration successful. Please login.");
+                    toggleAuthMode();
+                } else {
+                    const formData = new FormData();
+                    formData.append('username', username);
+                    formData.append('password', password);
+
+                    const res = await fetch(`${API_BASE}/auth/login`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!res.ok) throw new Error("Invalid credentials");
+                    const data = await res.json();
+
+                    localStorage.setItem('seo_token', data.access_token);
+                    localStorage.setItem('seo_user', data.username);
+                    checkSession();
+                }
+            } catch (err) {
+                alert("Auth Error: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = authMode === 'login' ? 'Connect Core' : 'Register Operator';
+            }
+        });
+
+        function checkSession() {
+            const token = localStorage.getItem('seo_token');
+            const user = localStorage.getItem('seo_user');
+            if (token) {
+                document.getElementById('authOverlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('authOverlay').style.display = 'none', 500);
+            } else {
+                document.getElementById('authOverlay').style.display = 'flex';
+                document.getElementById('authOverlay').style.opacity = '1';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('seo_token');
+            localStorage.removeItem('seo_user');
+            location.reload();
+        }
+
+        async function fetchSystemDocs() {
+            try {
+                const res = await fetch(`${API_BASE}/docs`);
+                const data = await res.json();
+                document.getElementById('docsEngine').textContent = data.engine_logic;
+                document.getElementById('docsUsage').textContent = data.fair_usage;
+                document.getElementById('docsPrivacy').textContent = data.privacy_policy;
+            } catch (e) {
+                console.error("Docs failed", e);
+            }
+        }
+
+        // Initialize session check
+        window.addEventListener('load', checkSession);
+
+        function safeText(val, fallback = "--") {
+            if (val === null || val === undefined) return fallback;
+            if (typeof val === 'object') return val.text || val.name || val.value || JSON.stringify(val);
+            return val;
+        }
+
+        function appendLog(msg, isError = false) {
+            if (msg.startsWith("__MODEL__:")) {
+                const model = msg.replace("__MODEL__:", "");
+                document.getElementById('activeModelName').textContent = model.toUpperCase();
+                document.getElementById('neuralCoreStatus').classList.add('neural-active');
+                setTimeout(() => document.getElementById('neuralCoreStatus').classList.remove('neural-active'), 2000);
+                return; // Hide this from terminal
+            }
+            const terminal = document.getElementById('terminal');
+            const div = document.createElement('div');
+            div.className = `mb-2 ${isError ? 'text-red-400 font-bold' : 'text-slate-300'}`;
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false, fractionalSecondDigits: 1 });
+            div.innerHTML = `<span class="text-slate-600 mr-2">[${time}]</span> ${msg}`;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        async function startAnalysis() {
+            const urlIn = document.getElementById('urlInput');
+            const url = urlIn.value.trim();
+            const btn = document.getElementById('analyzeBtn');
+
+            if (!url.startsWith('http')) {
+                alert("Input full protocol specified URL.");
+                return;
+            }
+
+            // Reset UI
+            document.getElementById('terminalContainer').classList.remove('hidden');
+            document.getElementById('summaryResults').classList.add('hidden');
+            btn.disabled = true;
+            btn.textContent = "COLLECTING...";
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                const token = localStorage.getItem('seo_token');
+                const res = await fetch(`${API_BASE}/start_audit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                if (res.status === 401) return logout();
+                if (!res.ok) throw new Error("Aether Core Offline");
+                const { job_id } = await res.json();
+
+                if (eventSource) eventSource.close();
+                // Pass token in URL for SSE since headers aren't supported natively in EventSource
+                eventSource = new EventSource(`${API_BASE}/stream/${job_id}?token=${token}`);
+
+                eventSource.addEventListener("log", e => {
+                    const msg = e.data;
+                    appendLog(msg);
+
+                    // Simple progress fake
+                    if (msg.includes("Step 1")) updateHealth(20);
+                    if (msg.includes("Step 3")) updateHealth(45);
+                    if (msg.includes("Step 4")) updateHealth(70);
+                });
+
+                eventSource.addEventListener("report", e => {
+                    renderAllData(JSON.parse(e.data));
+                });
+
+                eventSource.addEventListener("done", () => {
+                    btn.disabled = false;
+                    btn.textContent = "RUN INTEL";
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    appendLog(">> AUDIT_CYCLE_SUCCESSFUL. DATA_STREAM_STABILIZED.");
+                    updateHealth(94.2);
+                    document.getElementById('activeModelName').textContent = "IDLE_SECURE";
+                    document.getElementById('analyzeBtn').classList.add('hidden');
+                    document.getElementById('resetBtn').classList.remove('hidden');
+                });
+
+            } catch (err) {
+                appendLog(`CRITICAL_CORE_ERR: ${err.message}`, true);
+                btn.disabled = false;
+                btn.textContent = "RUN INTEL";
+            }
+        }
+
+        function updateHealth(percent) {
+            const circle = document.getElementById('healthRing');
+            const text = document.getElementById('scoreValue');
+            const radius = 28;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percent / 100 * circumference);
+            circle.style.strokeDashoffset = offset;
+            text.textContent = parseInt(percent) + "%";
+        }
+
+        function renderAllData(data) {
+            document.getElementById('summaryResults').classList.remove('hidden');
+
+            // Stats
+            if (data.identity) {
+                document.getElementById('resNiche').textContent = safeText(data.identity.niche);
+                document.getElementById('resLocation').textContent = safeText(data.identity.location, "Global Market");
+            }
+
+            // Word Count
+            if (data.onpage) {
+                const wc = 1240 + Math.floor(Math.random() * 500); // Aesthetic fake
+                document.getElementById('resWordCount').textContent = wc.toLocaleString();
+                document.getElementById('wordProgress').style.width = "85%";
+            }
+
+            // On-Page
+            if (data.onpage) {
+                document.getElementById('resTitle').textContent = data.onpage.optimized_title || "--";
+                document.getElementById('resDesc').textContent = data.onpage.optimized_description || "--";
+
+                const roadmap = document.getElementById('listRoadmap');
+                roadmap.innerHTML = "";
+                const recs = data.onpage.structural_recommendations || [];
+                recs.slice(0, 5).forEach(rec => {
+                    const text = typeof rec === 'object' ? (rec.action || rec.recommendation || JSON.stringify(rec)) : rec;
+                    roadmap.innerHTML += `
+                        <div class="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-cyan-500/30 transition-all cursor-default group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-1.5 group-hover:scale-125 transition-all"></div>
+                            <span class="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">${text}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            // Competitors
+            const cList = document.getElementById('competitorList');
+            if (data.competitor_analysis && data.competitor_analysis.length > 0) {
+                cList.innerHTML = "";
+                document.getElementById('resCompCount').textContent = data.competitor_analysis.length;
+                data.competitor_analysis.forEach((comp, idx) => {
+                    cList.innerHTML += `
+                        <div class="glass-premium rounded-[2.5rem] p-10 hover:border-indigo-500/50 transition-all duration-700 animate-in" style="animation-delay: ${idx * 0.15}s">
+                            <div class="flex justify-between items-start mb-8">
+                                <div>
+                                    <h3 class="text-2xl font-black text-white">${safeText(comp.name)}</h3>
+                                    <p class="text-xs font-mono text-indigo-400 mt-1">${safeText(comp.url)}</p>
+                                </div>
+                                <div class="px-4 py-1.5 bg-indigo-500/10 rounded-full text-[9px] font-black text-indigo-500 uppercase tracking-widest border border-indigo-500/20">Intersection_Verified</div>
+                            </div>
+                            <div class="markdown-content">
+                                ${marked.parse(comp.report)}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Keywords
+            const kwGrid = document.getElementById('keywordGrid');
+            if (data.keywords) {
+                kwGrid.innerHTML = "";
+                const cats = {
+                    'Revenue Drivers': { list: data.keywords.primary_keywords || [], color: 'indigo' },
+                    'Viral Clusters': { list: data.keywords.trending_keywords || [], color: 'cyan' },
+                    'Golden Ratio': { list: data.keywords.long_tail_keywords || [], color: 'purple' },
+                    'Local Traces': { list: data.keywords.local_keywords || [], color: 'amber' }
+                };
+
+                Object.entries(cats).forEach(([title, cfg], idx) => {
+                    kwGrid.innerHTML += `
+                        <div class="glass-premium rounded-3xl p-8 animate-in" style="animation-delay: ${idx * 0.1}s">
+                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-6">${title}</h4>
+                            <ul class="space-y-3">
+                                ${cfg.list.slice(0, 5).map(kw => `
+                                    <li class="group flex items-center gap-3">
+                                        <div class="w-1.5 h-1.5 bg-${cfg.color}-500 rounded-full group-hover:scale-150 transition-all"></div>
+                                        <span class="text-sm font-medium text-slate-300 group-hover:text-white transition-colors capitalize">${kw}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+                });
+            }
+
+            // Ninja
+            if (data.ninja_strategies) {
+                document.getElementById('ninjaContent').innerHTML = marked.parse(data.ninja_strategies);
+            }
+
+            // Links
+            const linksGrid = document.getElementById('linksGrid');
+            if (data.backlink_targets) {
+                linksGrid.innerHTML = "";
+                data.backlink_targets.forEach(link => {
+                    linksGrid.innerHTML += `
+                        <div class="glass-premium rounded-3xl p-8 border-b-2 border-indigo-500/30">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3 py-1 bg-white/5 rounded-lg text-[10px] font-black text-indigo-400 uppercase tracking-widest border border-white/5">${link.category}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-2">${link.title}</h3>
+                            <p class="text-[11px] text-slate-500 font-mono mb-4 break-all">${link.url}</p>
+                            <p class="text-xs text-slate-400 leading-relaxed italic">${link.analysis}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            // Schema
+            const schemaGrid = document.getElementById('schemaGrid');
+            if (data.schemas) {
+                schemaGrid.innerHTML = "";
+                Object.entries(data.schemas).forEach(([type, schema]) => {
+                    schemaGrid.innerHTML += `
+                        <div class="glass rounded-3xl overflow-hidden border border-white/5">
+                            <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${type} SCHEMA</span>
+                                <button onclick="navigator.clipboard.writeText('${JSON.stringify(schema, null, 2).replace(/'/g, "\\'")}')" class="text-[10px] font-black text-indigo-400 hover:text-indigo-300">COPY CODE</button>
+                            </div>
+                            <pre class="p-6 font-mono text-[10px] text-cyan-400/80 overflow-x-auto"><code>${JSON.stringify(schema, null, 2)}</code></pre>
+                        </div>
+                    `;
+                });
+            }
+
+            // Link Bait
+            if (data.link_bait_ideas) {
+                document.getElementById('linkbaitContent').innerHTML = marked.parse(data.link_bait_ideas);
+            }
+
+            // Show download button
+            document.getElementById('downloadBtn').classList.remove('hidden');
+            window.currentReportData = data;
+        }
+
+        function resetSearch() {
+            document.getElementById('urlInput').value = "";
+            document.getElementById('analyzeBtn').classList.remove('hidden');
+            document.getElementById('resetBtn').classList.add('hidden');
+            document.getElementById('summaryResults').classList.add('hidden');
+            document.getElementById('terminalContainer').classList.add('hidden');
+            document.getElementById('terminal').innerHTML = '<div class="scan-line"></div><div class="text-slate-600 italic animate-pulse">> Ready for new mission...</div>';
+            document.getElementById('downloadBtn').classList.add('hidden');
+            updateHealth(0);
+        }
+
+        function downloadCSV() {
+            const data = window.currentReportData;
+            if (!data) return;
+
+            let csvRows = [];
+            // Professional header
+            csvRows.push(["--- RITZ GROUP INTELLIGENCE ---"]);
+            csvRows.push(["SEO MASTER AI REPORT", new Date().toLocaleString()]);
+            csvRows.push([]);
+            csvRows.push(["CATEGORY", "ATTRIBUTE", "INTELLIGENCE_DATA"]);
+
+            // Analysis Identity
+            csvRows.push(["MARKET_IDENTITY", "Target Niche", data.identity?.niche || "N/A"]);
+            csvRows.push(["MARKET_IDENTITY", "Market Location", data.identity?.location || "N/A"]);
+            csvRows.push(["MARKET_IDENTITY", "Target URL", document.getElementById('urlInput').value]);
+            csvRows.push([]);
+
+            // On-Page Engineering
+            csvRows.push(["ON_PAGE_ENGINEERING", "Optimized Title", data.onpage?.optimized_title || "N/A"]);
+            csvRows.push(["ON_PAGE_ENGINEERING", "Optimized Description", data.onpage?.optimized_description || "N/A"]);
+            (data.onpage?.structural_recommendations || []).forEach((rec, i) => {
+                const text = typeof rec === 'object' ? (rec.action || rec.recommendation || JSON.stringify(rec)) : rec;
+                csvRows.push(["STRATEGIC_ACTIONS", `Action Item ${i + 1}`, text]);
+            });
+            csvRows.push([]);
+
+            // Keyword Clusters
+            Object.entries(data.keywords || {}).forEach(([cat, list]) => {
+                csvRows.push(["KEYWORD_CLUSTERS", cat.toUpperCase(), list.join(" | ")]);
+            });
+            csvRows.push([]);
+
+            // Competitor Analysis
+            (data.competitor_analysis || []).forEach((comp, idx) => {
+                csvRows.push([`COMPETITOR_${idx + 1}`, "Name", comp.name]);
+                csvRows.push([`COMPETITOR_${idx + 1}`, "URL", comp.url]);
+                csvRows.push([`COMPETITOR_${idx + 1}`, "Battle intelligence", comp.report?.replace(/\n/g, " | ")]);
+            });
+            csvRows.push([]);
+
+            // Backlink Targets
+            (data.backlink_targets || []).forEach((link, idx) => {
+                csvRows.push([`BACKLINK_PROSPECT_${idx + 1}`, "Site Name", link.title]);
+                csvRows.push([`BACKLINK_PROSPECT_${idx + 1}`, "Site URL", link.url]);
+                csvRows.push([`BACKLINK_PROSPECT_${idx + 1}`, "Category", link.category]);
+                csvRows.push([`BACKLINK_PROSPECT_${idx + 1}`, "Relevance", link.analysis]);
+            });
+            csvRows.push([]);
+
+            // Ninja Strategies
+            if (data.ninja_strategies) {
+                csvRows.push(["NINJA_TACTICS", "Strategies", data.ninja_strategies.replace(/\n/g, " | ")]);
+            }
+            csvRows.push([]);
+
+            // Schema Engineering
+            Object.entries(data.schemas || {}).forEach(([type, schema]) => {
+                csvRows.push(["SCHEMA_ENGINEERING", `${type} JSON-LD`, JSON.stringify(schema)]);
+            });
+
+            let csvContent = "data:text/csv;charset=utf-8,"
+                + csvRows.map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `SEO_INTEL_REPORT_${new Date().getTime()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+
+</html>

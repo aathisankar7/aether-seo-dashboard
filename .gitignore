@@ -1,0 +1,15 @@
+.env
+users.db
+__pycache__/
+*.pyc
+.DS_Store
+reports/
+link_bait_reports/
+schemas/
+seo_content/
+storage/
+*.log
+.vercel/
+node_modules/
+dist/
+build/

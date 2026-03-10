@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/(api|docs)(.*)",
+            "destination": "/api/index.py"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/seo_dashboard.html"
+        }
+    ]
+}
