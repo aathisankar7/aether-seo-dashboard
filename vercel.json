@@ -6,7 +6,7 @@
         },
         {
             "source": "/(.*)",
-            "destination": "/seo_dashboard.html"
+            "destination": "/public/seo_dashboard.html"
         }
     ]
 }

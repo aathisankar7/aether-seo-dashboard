@@ -1,20 +1,20 @@
-"""
-SEO Expert API — FastAPI server that runs the SEO Expert Agent
-and streams real-time logs to the frontend dashboard using Server-Sent Events (SSE).
-"""
-
-from fastapi import FastAPI, BackgroundTasks, Request
+from fastapi import FastAPI, BackgroundTasks, Request, HTTPException, Depends
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sse_starlette.sse import EventSourceResponse
 from pydantic import BaseModel
+import sys
+import os
 import asyncio
 import json
-from seo_expert_agent import SEOExpertAgent
-import auth_manager
-from fastapi import HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import timedelta
+
+# Ensure root is in sys.path for Vercel serverless environment
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from agents.seo_expert_agent import SEOExpertAgent
+from core import mongodb_manager
 
 app = FastAPI(title="SEO Expert AI Agent API")
 
@@ -37,7 +37,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), request: Request
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
         
-    username = auth_manager.verify_token(token)
+    username = mongodb_manager.verify_token(token)
     if not username:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     return username
@@ -48,7 +48,7 @@ active_jobs = {}
 @app.get("/")
 async def serve_dashboard():
     """Serve the static SEO dashboard HTML."""
-    return FileResponse("seo_dashboard.html")
+    return FileResponse("public/seo_dashboard.html")
 
 class AuditRequest(BaseModel):
     url: str
@@ -60,20 +60,20 @@ class UserAuth(BaseModel):
 
 @app.post("/api/auth/register")
 async def register(user: UserAuth):
-    success = auth_manager.create_user(user.username, user.email, user.password)
+    success = await mongodb_manager.create_user(user.username, user.email, user.password)
     if not success:
         raise HTTPException(status_code=400, detail="Username or email already exists")
     return {"message": "User registered successfully"}
 
 @app.post("/api/auth/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = auth_manager.get_user(form_data.username)
-    if not user or not auth_manager.verify_password(form_data.password, user["hashed_password"]):
+    user = await mongodb_manager.get_user(form_data.username)
+    if not user or not mongodb_manager.verify_password(form_data.password, user["hashed_password"]):
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     
-    access_token = auth_manager.create_access_token(
+    access_token = mongodb_manager.create_access_token(
         data={"sub": user["username"]}, 
-        expires_delta=timedelta(minutes=auth_manager.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta=timedelta(minutes=mongodb_manager.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     return {"access_token": access_token, "token_type": "bearer", "username": user["username"]}
 
@@ -91,13 +91,9 @@ async def log_generator(job_id):
     queue = active_jobs[job_id]["queue"]
     
     while True:
-        # Wait for log messages
         msg = await queue.get()
-        
-        # Check for termination signal
         if msg == "__DONE__":
             if active_jobs[job_id].get("report"):
-                # Send the final JSON payload
                 yield {
                     "event": "report",
                     "data": json.dumps(active_jobs[job_id]["report"])
@@ -109,7 +105,6 @@ async def log_generator(job_id):
             yield {"event": "error", "data": msg.replace("__ERROR__:", "")}
             break
             
-        # Send streaming log
         yield {"event": "log", "data": msg}
         await asyncio.sleep(0.01)
 
@@ -119,7 +114,6 @@ async def run_agent_async(job_id, url):
     queue = active_jobs[job_id]["queue"]
     
     def on_log(msg):
-        # Already in the main loop, can queue directly
         queue.put_nowait(msg)
         
     agent.on_log(on_log)
@@ -135,28 +129,20 @@ async def run_agent_async(job_id, url):
 async def start_audit(req: AuditRequest, background_tasks: BackgroundTasks, current_user: str = Depends(get_current_user)):
     """Start the AI SEO process in the background and return a Job ID."""
     job_id = f"job_{id(req)}_{asyncio.get_event_loop().time()}"
-    
     active_jobs[job_id] = {
         "url": req.url,
         "queue": asyncio.Queue(),
-        "loop": asyncio.get_event_loop(),
         "report": None
     }
-    
-    # Run the async agent in the background
     background_tasks.add_task(run_agent_async, job_id, req.url)
-    
     return {"job_id": job_id, "status": "started"}
 
 @app.get("/api/stream/{job_id}")
 async def stream_logs(job_id: str, request: Request, current_user: str = Depends(get_current_user)):
-    """Stream real-time log updates for a given Job ID via SSE."""
     if job_id not in active_jobs:
         return {"error": "Invalid Job ID"}
-        
     return EventSourceResponse(log_generator(job_id))
 
 if __name__ == "__main__":
     import uvicorn
-    # Run the server on port 8000
     uvicorn.run(app, host="0.0.0.0", port=8000)

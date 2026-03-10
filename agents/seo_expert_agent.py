@@ -17,7 +17,7 @@ from googlesearch import search # Crucial and Verified
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
 
 # Import from our advanced model router
-from model_router import race_models
+from core.model_router import race_models
 
 class SEOExpertAgent:
     def __init__(self):
