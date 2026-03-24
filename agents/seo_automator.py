@@ -11,7 +11,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # Import our advanced model router
-from model_router import race_models
+from core.model_router import race_models
 
 load_dotenv()
 

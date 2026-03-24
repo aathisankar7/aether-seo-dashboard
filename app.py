@@ -10,21 +10,59 @@ import pandas as pd
 project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(project_root)
 
-from seo_expert_agent import SEOExpertAgent
-from seo_automator import LocalSEOAutomator
-from bulk_content_generator import BulkContentGenerator
+from agents.seo_expert_agent import SEOExpertAgent
+from agents.seo_automator import LocalSEOAutomator
+from agents.bulk_content_generator import BulkContentGenerator
 
 # Page Config
 st.set_page_config(page_title="Ritz Elite SEO Master Suite", page_icon="🥷", layout="wide")
 
-# Premium CSS
-st.markdown("""
+# Theme Definitions
+THEMES = {
+    "Midnight Neon": {
+        "bg": "#0e1117",
+        "accent": "#ff4b4b",
+        "card": "#1a1c24",
+        "stat_border": "#ff4b4b"
+    },
+    "Cyberpunk Gold": {
+        "bg": "#000000",
+        "accent": "#fbc02d",
+        "card": "#121212",
+        "stat_border": "#fbc02d"
+    },
+    "Emerald Glass": {
+        "bg": "#051612",
+        "accent": "#00ffa3",
+        "card": "#0a241f",
+        "stat_border": "#00ffa3"
+    },
+    "Slate Minimalism": {
+        "bg": "#1e293b",
+        "accent": "#38bdf8",
+        "card": "#334155",
+        "stat_border": "#38bdf8"
+    }
+}
+
+# Sidebar Theme Selector
+st.sidebar.subheader("🎨 Visual Persona")
+selected_theme = st.sidebar.selectbox("Select Theme", list(THEMES.keys()))
+theme = THEMES[selected_theme]
+
+# Premium CSS Injection
+st.markdown(f"""
     <style>
-    .main { background-color: #0e1117; }
-    .stTabs [data-baseweb="tab-list"] { gap: 24px; }
-    .stTabs [data-baseweb="tab"] { height: 50px; white-space: pre-wrap; background-color: #1a1c24; border-radius: 5px 5px 0 0; padding: 10px 20px; transition: 0.3s; }
-    .stTabs [aria-selected="true"] { background-color: #ff4b4b; color: white; }
-    .stat-card { background-color: #262730; padding: 20px; border-radius: 10px; border-left: 5px solid #ff4b4b; }
+    .main {{ background-color: {theme['bg']}; }}
+    .stTabs [data-baseweb="tab-list"] {{ gap: 24px; }}
+    .stTabs [data-baseweb="tab"] {{ height: 50px; white-space: pre-wrap; background-color: {theme['card']}; border-radius: 5px 5px 0 0; padding: 10px 20px; transition: 0.3s; }}
+    .stTabs [aria-selected="true"] {{ background-color: {theme['accent']}; color: white; }}
+    .stat-card {{ background-color: {theme['card']}; padding: 20px; border-radius: 10px; border-left: 5px solid {theme['accent']}; }}
+    
+    /* Sidebar styling */
+    section[data-testid="stSidebar"] {{
+        background-color: {theme['bg']} !important;
+    }}
     </style>
 """, unsafe_allow_html=True)
 

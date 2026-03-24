@@ -1,0 +1,16 @@
+{
+  "unique_key": "https://dictionary.cambridge.org/zhs/%e8%af%8d%e5%85%b8/%e8%8b%b1%e8%af%ad/top",
+  "url": "https://dictionary.cambridge.org/zhs/词典/英语/top",
+  "method": "GET",
+  "payload": null,
+  "headers": {},
+  "user_data": {
+    "__crawlee": {
+      "state": 4
+    }
+  },
+  "retry_count": 0,
+  "no_retry": false,
+  "loaded_url": null,
+  "handled_at": "2026-03-08 10:35:22.821803+00:00"
+}

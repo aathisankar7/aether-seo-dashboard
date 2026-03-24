@@ -133,9 +133,13 @@ async def query_ollama(session: aiohttp.ClientSession, prompt: str) -> dict:
     payload = {"model": "qwen2.5:7b", "prompt": prompt, "stream": False}
     try:
         async with session.post(url, json=payload) as resp:
-            data = await resp.json()
             elapsed = time.monotonic() - start
-            return {"provider": "Ollama", "model": "Qwen 2.5 (Local)", "response": data.get("response", ""), "elapsed": elapsed}
+            if resp.status == 200:
+                data = await resp.json()
+                response = data.get("response", "").strip()
+                if response:
+                    return {"provider": "Ollama", "model": "Qwen 2.5 (Local)", "response": response, "elapsed": elapsed}
+            return {"provider": "Ollama", "error": f"Status {resp.status} or empty response", "elapsed": elapsed}
     except Exception as e:
         return {"provider": "Ollama", "error": str(e), "elapsed": time.monotonic() - start}
 

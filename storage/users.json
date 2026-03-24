@@ -1,0 +1,14 @@
+[
+  {
+    "username": "aathi",
+    "email": "aathisankar22@gmail.com",
+    "hashed_password": "$2b$12$DD2y8GfIGCdW5c208kGFfuYFXfk3JZZ58V8Znej33dG5EA.vtPtQu",
+    "created_at": "2026-03-12T06:01:39.380246"
+  },
+  {
+    "username": "aathi888",
+    "email": "aathisimham@gmail.com",
+    "hashed_password": "$2b$12$KG/xFdgSW5FRSL6Unt/qwuyv7wg7V.icnAjqTxkEPo4taYfYoBREK",
+    "created_at": "2026-03-12T06:04:07.518389"
+  }
+]

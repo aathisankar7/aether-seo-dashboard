@@ -1,0 +1,17 @@
+{
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Ritz Group",
+    "url": "https://ritzgroup.co",
+    "logo": "https://ritzgroup.co/logo.png",
+    "sameAs": [
+        "https://www.linkedin.com/company/ritz-group",
+        "https://twitter.com/ritzgroup",
+        "https://www.facebook.com/ritzgroup"
+    ],
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-XXXXXXXXXX",
+        "contactType": "customer service"
+    }
+}

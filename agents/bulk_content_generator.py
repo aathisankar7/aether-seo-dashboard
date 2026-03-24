@@ -11,7 +11,7 @@ from datetime import datetime
 import pandas as pd
 
 # Import our advanced model router
-from model_router import race_models
+from core.model_router import race_models
 
 class BulkContentGenerator:
     def __init__(self, tracker_path, output_dir="./seo_content"):

@@ -1,0 +1,16 @@
+{
+  "unique_key": "https://dictionary.cambridge.org/dictionary/english/top",
+  "url": "https://dictionary.cambridge.org/dictionary/english/top",
+  "method": "GET",
+  "payload": null,
+  "headers": {},
+  "user_data": {
+    "__crawlee": {
+      "state": 4
+    }
+  },
+  "retry_count": 0,
+  "no_retry": false,
+  "loaded_url": null,
+  "handled_at": "2026-03-08 10:35:25.695037+00:00"
+}
