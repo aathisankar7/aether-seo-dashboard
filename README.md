@@ -1,4 +1,4 @@
-# Ritz SEO Intelligence SaaS 🚀
+#  SEO Intelligence SaaS 🚀
 
 A high-performance, AI-driven SEO automation platform built with FastAPI and MongoDB.
 
