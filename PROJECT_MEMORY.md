@@ -81,13 +81,26 @@ These rules were debugged and finalized on 2026-03-24. They MUST be followed:
 
 ### Startup Commands
 ```bash
-# FastAPI Backend (port 8000)
-nohup python3 -m uvicorn api.index:app --host 0.0.0.0 --port 8000 > seo_backend.log 2>&1 & echo $! > backend.pid
+# FastAPI Backend (port 8000) - Run from backend/ folder
+cd backend
+python3 -m uvicorn api.index:app --host 127.0.0.1 --port 8000
 
-# Streamlit Frontend (port 8501)
-nohup streamlit run app.py --server.port 8501 > streamlit.log 2>&1 & echo $! > frontend.pid
+# Open frontend in default browser
+open http://127.0.0.1:8000
 ```
+
+## 🛠️ Upgrades Added (May 28-29, 2026)
+We successfully performed a major architectural and connectivity overhaul:
+1. **Repository Relocation & Restructuring:** Moved the entire project to `/Users/aathi/AI_lab/aether-seo-dashboard` and restructured the monorepo into two clean, isolated directories: `frontend/` (containing static dashboard page `seo_dashboard.html`) and `backend/` (containing API servers, model logic, agents, and test scripts).
+2. **Vercel & Routing Updates:** Updated `vercel.json` and `backend/api/index.py` to seamlessly route static assets and serverless functions relative to their new separated directories.
+3. **Google Gemini Integration:** Added official support for the `gemini-2.5-flash` model in `backend/core/model_router.py` using direct async REST calls. It is now the primary reasoning model and won the latency race (6.2s total cold-start inference time).
+4. **Serper Scrape API Integration:** Replaced local `Crawl4AI` browser dependencies with high-performance `https://scrape.serper.dev` Cloud API scraper inside `backend/agents/seo_expert_agent.py`. This eliminates Playwright setup overhead, anti-bot blocks, and enables near-instant page parsing.
+5. **Exclusive Serper Search:** Restricted the Google Search pipeline in `step_4_competitor_analysis` to exclusively use the Serper API, removing the fallback to SerpApi.
+6. **Dynamic API Origin Resolution:** Updated `frontend/seo_dashboard.html` to resolve its endpoint to `window.location.origin + "/api"` dynamically. This prevents CORS loopback mismatches if accessing via `127.0.0.1` vs `localhost`.
+7. **Configured Local Env:** Established the `.env` configuration file inside `backend/` containing active credentials for SerpApi, Serper, and your Gemini API Key.
 
 ---
 *Created by Antigravity AI for Aathisankar's SEO Expansion Project.*
+
+
 

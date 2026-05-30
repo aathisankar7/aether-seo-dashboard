@@ -2,11 +2,11 @@
     "rewrites": [
         {
             "source": "/(api|docs)(.*)",
-            "destination": "/api/index.py"
+            "destination": "/backend/api/index.py"
         },
         {
             "source": "/(.*)",
-            "destination": "/public/seo_dashboard.html"
+            "destination": "/frontend/seo_dashboard.html"
         }
     ]
 }
